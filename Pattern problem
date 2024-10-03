@@ -1,0 +1,51 @@
+#include <iostream>
+using namespace std;
+
+int main() {
+    int totalRows;
+
+    
+    cout << "Enter an odd number for the total rows in the diamond: ";
+    cin >> totalRows;
+
+    if (totalRows % 2 == 0) {
+        cout << "Error: You must enter an odd number!" << endl;
+        return 1;
+    }
+
+    int halfRows = totalRows / 2; 
+
+   
+    for (int i = 0; i <= halfRows; i++) {
+       
+        for (int space = 0; space < halfRows - i; space++) {
+            cout << " ";
+        }
+
+      
+        for (int j = 0; j < 2 * i + 1; j++) {
+            cout << "*";
+        }
+
+      
+        cout << endl;
+    }
+
+    
+    for (int i = halfRows - 1; i >= 0; i--) {
+       
+        for (int space = 0; space < halfRows - i; space++) {
+            cout << " ";
+        }
+
+       
+        for (int j = 0; j < 2 * i + 1; j++) {
+            cout << "*";
+        }
+
+      
+        cout << endl;
+    }
+
+    return 0;
+}
