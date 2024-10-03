@@ -1,0 +1,57 @@
+
+
+import pandas as pd
+from elasticsearch import Elasticsearch
+from elasticsearch.helpers import bulk
+
+# Connect to Elasticsearch
+es = Elasticsearch(["http://localhost:9200"])
+
+# Define the index name
+index_name = "employee_data"
+
+# 1. Create an index in Elasticsearch
+if not es.indices.exists(index=index_name):
+    es.indices.create(
+        index=index_name,
+        body={
+            "settings": {
+                "number_of_shards": 1,
+                "number_of_replicas": 1
+            },
+            "mappings": {
+                "properties": {
+                    "Employee Name": {"type": "text"},
+                    "Employee Number": {"type": "keyword"},
+                    "Position": {"type": "text"},
+                    "Hire Date": {"type": "date", "format": "yyyy-MM-dd"},
+                    "Salary": {"type": "float"},
+                    "Manager Name": {"type": "text"}
+                }
+            }
+        }
+    )
+
+# 2. Load the employee data from the CSV file
+csv_file_path = "/path/to/your/employee_data.csv"  # Replace with the actual file path
+employee_data = pd.read_csv(csv_file_path)
+
+# 3. Prepare the data for bulk indexing
+def generate_data(df):
+    for _, row in df.iterrows():
+        yield {
+            "_index": index_name,
+            "_source": {
+                "Employee Name": row["Employee Name"],
+                "Employee Number": row["Employee Number"],
+                "Position": row["Position"],
+                "Hire Date": row["Hire Date"],
+                "Salary": row["Salary"],
+                "Manager Name": row["Manager Name"]
+            }
+        }
+
+# 4. Index the data using bulk API
+bulk(es, generate_data(employee_data))
+
+print("Data indexed successfully")
